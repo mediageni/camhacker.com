@@ -1,0 +1,33 @@
+.card-custom {
+                height: 100%;
+            }
+            .row-equal {
+                display: flex;
+                flex-wrap: wrap;
+            }
+            .card-body-bottom {
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-end;
+            }
+
+      .bi {
+width: 1em;
+    height: 1em;
+    vertical-align: -.125em;
+        fill: currentColor;
+      }
+
+.bi-webcam {
+width: 1.6em;
+height: 1.6em;
+}
+
+body {
+  padding-bottom: 20px;
+}
+
+.navbar {
+  margin-bottom: 20px;
+}
+

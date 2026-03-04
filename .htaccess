@@ -1,0 +1,39 @@
+# Enable mod_rewrite
+RewriteEngine On
+
+# Redirect www traffic to non-www
+RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+RewriteRule ^(.*)$ http://%1/$1 [L,R=301]
+
+# Remove trailing slashes (optional, helps keep URLs consistent)
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)/$ /$1 [L,R=301]
+
+# Rewrite for clean search URL
+RewriteRule ^search$ /search.php [QSA,L]
+
+# Rewrite country URLs
+RewriteRule ^country/([^/]+)/?$ /search.php?country=$1 [L,QSA]
+
+# Rewrite city URLs
+RewriteRule ^city/([^/]+)/?$ /search.php?city=$1 [L,QSA]
+
+# Rewrite place (tag) URLs
+RewriteRule ^place/([^/]+)/?$ /search.php?tag=$1 [L,QSA]
+
+# Rewrite manufacturer URLs
+RewriteRule ^manufacturer/([^/]+)/?$ /search.php?manufacturer=$1 [L,QSA]
+
+# Rewrite cam detail page URLs
+RewriteRule ^view/([^/]+)/?$ /cam.php?id=$1 [L,QSA]
+
+# Rewrite URLs for static pages (About, Contact, Privacy Policy)
+RewriteRule ^about/?$ /about.php [L]
+RewriteRule ^contact/?$ /contact.php [L]
+RewriteRule ^privacy/?$ /privacy.php [L]
+
+# Prevent direct access to the .htaccess file
+<Files .htaccess>
+Order Allow,Deny
+Deny from all
+</Files>

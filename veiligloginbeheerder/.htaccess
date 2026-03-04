@@ -1,0 +1,7 @@
+AuthName "Beveiligd gedeelte"
+AuthUserFile /home/mediageni/camhacker.com/.htpasswd
+AuthGroupFile /dev/null
+AuthType Basic
+
+require valid-user
+
