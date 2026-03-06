@@ -1,85 +1,61 @@
-$(document).ready(function() {
-    // Function to load all cities
-    function loadAllCities() {
-        $.ajax({
-            url: '/search.php',  // Use absolute path from root
-            type: 'GET',
-            data: { ajax: 'get_all_cities' },  // Request all cities
-            success: function(response) {
-                try {
-                    var cities = JSON.parse(response);  // Parse the JSON response
+// CamHacker - Main JavaScript
 
-                    // Clear the city dropdown and populate with all cities
-                    $('#city').empty().append('<option value="">City</option>');
-                    $.each(cities, function(index, city) {
-                        $('#city').append('<option value="' + city + '">' + city + '</option>');
-                    });
-                } catch (e) {
-                    console.error("Invalid JSON response:", response);
-                }
-            },
-            error: function() {
-                alert('Error fetching all cities. Please try again.');
-            }
-        });
+(function() {
+  'use strict';
+
+  // Theme Management
+  const getStoredTheme = () => localStorage.getItem('theme');
+  const setStoredTheme = theme => localStorage.setItem('theme', theme);
+  const getPreferredTheme = () => getStoredTheme() || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
+  const setTheme = theme => {
+    const resolved = theme === 'auto'
+      ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+      : theme;
+    document.documentElement.setAttribute('data-bs-theme', resolved);
+  };
+
+  const updateThemeUI = (theme) => {
+    document.querySelectorAll('[data-bs-theme-value]').forEach(el => {
+      el.classList.toggle('active', el.getAttribute('data-bs-theme-value') === theme);
+    });
+    const icon = document.querySelector('#theme-toggle i');
+    if (icon) {
+      const icons = { light: 'bi-sun-fill', dark: 'bi-moon-stars-fill', auto: 'bi-circle-half' };
+      icon.className = 'bi ' + (icons[theme] || 'bi-circle-half');
     }
+  };
 
-    // Load all cities when the page loads
-    if ($('#country').val() === "") {
-        loadAllCities();
-    }
+  // Apply theme
+  setTheme(getPreferredTheme());
 
-    // When the country dropdown changes
-    $('#country').change(function() {
-        var country = $(this).val(); // Get the selected country value
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    const stored = getStoredTheme();
+    if (!stored || stored === 'auto') setTheme('auto');
+  });
 
-        // If a country is selected, make the AJAX request
-        if (country) {
-            $.ajax({
-                url: '/search.php',  // Use absolute path from root
-                type: 'GET',
-                data: { ajax: 'get_cities', country: country },  // Send the selected country
-                success: function(response) {
-                    try {
-                        var cities = JSON.parse(response);  // Parse the JSON response
+  document.addEventListener('DOMContentLoaded', () => {
+    updateThemeUI(getStoredTheme() || 'auto');
 
-                        // Clear the city dropdown
-                        $('#city').empty().append('<option value="">City</option>');
+    document.querySelectorAll('[data-bs-theme-value]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const theme = btn.getAttribute('data-bs-theme-value');
+        setStoredTheme(theme);
+        setTheme(theme);
+        updateThemeUI(theme);
+      });
+    });
 
-                        // Populate the city dropdown with the fetched cities
-                        $.each(cities, function(index, city) {
-                            $('#city').append('<option value="' + city + '">' + city + '</option>');
-                        });
-                    } catch (e) {
-                        console.error("Invalid JSON response:", response);
-                    }
-                },
-                error: function() {
-                    alert('Error fetching cities. Please try again.');
-                }
-            });
-        } else {
-            // If no country is selected, reload all cities
-            loadAllCities();
+    // Keyboard shortcut: Ctrl+K or Cmd+K for search
+    document.addEventListener('keydown', e => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        const modal = document.getElementById('searchModal');
+        if (modal) {
+          const bsModal = bootstrap.Modal.getOrCreateInstance(modal);
+          bsModal.toggle();
         }
+      }
     });
-
-    // ==============================
-    // Add Keyboard Shortcut Binding
-    // ==============================
-
-    // Bind 'mod+k' to show the modal
-    Mousetrap.bind('mod+k', function(event) {
-        event.preventDefault(); // Prevent default browser behavior
-        showModal();
-    });
-
-    // Function to show the modal
-    function showModal() {
-        // Assuming you're using Bootstrap 5
-        var myModal = new bootstrap.Modal(document.getElementById('myModal'), {
-            keyboard: true
-        });
-        myModal.show();
-    }
-});
+  });
+})();

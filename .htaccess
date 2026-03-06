@@ -1,39 +1,78 @@
 # Enable mod_rewrite
 RewriteEngine On
 
-# Redirect www traffic to non-www
-RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
-RewriteRule ^(.*)$ http://%1/$1 [L,R=301]
+# Force HTTPS (skip on localhost/127.0.0.1)
+RewriteCond %{HTTP_HOST} !localhost [NC]
+RewriteCond %{HTTP_HOST} !^127\.0\.0\.1 [NC]
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [L,R=301]
 
-# Remove trailing slashes (optional, helps keep URLs consistent)
+# Redirect www to non-www (skip on localhost)
+RewriteCond %{HTTP_HOST} !localhost [NC]
+RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+RewriteRule ^(.*)$ https://%1/$1 [L,R=301]
+
+# Remove trailing slashes
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)/$ /$1 [L,R=301]
 
-# Rewrite for clean search URL
-RewriteRule ^search$ /search.php [QSA,L]
+# SEO-friendly camera detail URLs: /cam/123
+RewriteRule ^cam/([0-9]+)$ /cam.php?id=$1 [L,QSA]
 
-# Rewrite country URLs
-RewriteRule ^country/([^/]+)/?$ /search.php?country=$1 [L,QSA]
+# SEO-friendly country URLs: /country/united-states
+RewriteRule ^country/([^/]+)$ /search.php?country=$1 [L,QSA]
 
-# Rewrite city URLs
-RewriteRule ^city/([^/]+)/?$ /search.php?city=$1 [L,QSA]
+# SEO-friendly city URLs: /city/new-york
+RewriteRule ^city/([^/]+)$ /search.php?city=$1 [L,QSA]
 
-# Rewrite place (tag) URLs
-RewriteRule ^place/([^/]+)/?$ /search.php?tag=$1 [L,QSA]
+# SEO-friendly place/tag URLs: /place/traffic-security
+RewriteRule ^place/([^/]+)$ /search.php?tag=$1 [L,QSA]
 
-# Rewrite manufacturer URLs
-RewriteRule ^manufacturer/([^/]+)/?$ /search.php?manufacturer=$1 [L,QSA]
+# SEO-friendly manufacturer URLs: /manufacturer/axis
+RewriteRule ^manufacturer/([^/]+)$ /search.php?manufacturer=$1 [L,QSA]
 
-# Rewrite cam detail page URLs
-RewriteRule ^view/([^/]+)/?$ /cam.php?id=$1 [L,QSA]
+# Search page
+RewriteRule ^search$ /search.php [L,QSA]
 
-# Rewrite URLs for static pages (About, Contact, Privacy Policy)
-RewriteRule ^about/?$ /about.php [L]
-RewriteRule ^contact/?$ /contact.php [L]
-RewriteRule ^privacy/?$ /privacy.php [L]
+# World map
+RewriteRule ^map$ /map.php [L]
 
-# Prevent direct access to the .htaccess file
+# Static pages
+RewriteRule ^about$ /about.php [L]
+RewriteRule ^contact$ /contact.php [L]
+RewriteRule ^privacy$ /privacy.php [L]
+
+# Dynamic sitemap
+RewriteRule ^sitemap\.xml$ /sitemap-generator.php [L]
+
+# Backward compatibility: redirect old /view/123 URLs to /cam/123
+RewriteRule ^view/([0-9]+)$ /cam/$1 [R=301,L]
+
+# Protect sensitive files
+<FilesMatch "\.(json|sql|log|htpasswd)$">
+  Order Allow,Deny
+  Deny from all
+</FilesMatch>
+
+# Allow .htaccess in subdirectories to override
 <Files .htaccess>
-Order Allow,Deny
-Deny from all
+  Order Allow,Deny
+  Deny from all
 </Files>
+
+# Cache static assets
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/jpeg "access plus 1 week"
+  ExpiresByType image/png "access plus 1 week"
+  ExpiresByType image/gif "access plus 1 week"
+  ExpiresByType image/svg+xml "access plus 1 week"
+  ExpiresByType text/css "access plus 1 week"
+  ExpiresByType application/javascript "access plus 1 week"
+  ExpiresByType image/x-icon "access plus 1 month"
+</IfModule>
+
+# GZIP compression
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json text/xml application/xml
+</IfModule>

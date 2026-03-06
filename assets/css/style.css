@@ -1,33 +1,161 @@
-.card-custom {
-                height: 100%;
-            }
-            .row-equal {
-                display: flex;
-                flex-wrap: wrap;
-            }
-            .card-body-bottom {
-                display: flex;
-                flex-direction: column;
-                justify-content: flex-end;
-            }
+/* CamHacker - Custom Styles */
 
-      .bi {
-width: 1em;
-    height: 1em;
-    vertical-align: -.125em;
-        fill: currentColor;
-      }
-
-.bi-webcam {
-width: 1.6em;
-height: 1.6em;
+:root {
+  --ch-primary: #ff6300;
+  --ch-primary-rgb: 255, 99, 0;
+  --ch-gradient: linear-gradient(135deg, #ff6300, #ff9100);
 }
 
-body {
-  padding-bottom: 20px;
+/* Navbar */
+#main-nav {
+  background: rgba(var(--bs-body-bg-rgb, 255,255,255), 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--bs-border-color);
+  z-index: 1030;
 }
 
-.navbar {
-  margin-bottom: 20px;
+[data-bs-theme="dark"] #main-nav {
+  background: rgba(var(--bs-body-bg-rgb, 33,37,41), 0.95);
 }
 
+.navbar-brand i { color: var(--ch-primary); }
+
+.dropdown-menu-scroll {
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+/* Text Gradient */
+.text-gradient {
+  background: var(--ch-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Hero Section */
+.hero-section {
+  background: radial-gradient(ellipse at 20% 50%, rgba(var(--ch-primary-rgb), 0.08), transparent 50%),
+              radial-gradient(ellipse at 80% 20%, rgba(var(--ch-primary-rgb), 0.06), transparent 50%);
+}
+
+.stat-card {
+  background: var(--bs-tertiary-bg);
+  border: 1px solid var(--bs-border-color);
+}
+
+/* Camera Cards */
+.cam-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: var(--bs-border-radius-lg) !important;
+}
+
+.cam-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.15) !important;
+}
+
+.cam-card-img {
+  border-radius: var(--bs-border-radius-lg) var(--bs-border-radius-lg) 0 0;
+  overflow: hidden;
+}
+
+.cam-card-overlay {
+  background: linear-gradient(transparent, rgba(0,0,0,0.6));
+}
+
+.cam-card .card-title {
+  color: var(--bs-body-color);
+}
+
+/* Country cards */
+.country-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: var(--bs-border-radius-lg) !important;
+}
+
+.country-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1) !important;
+}
+
+/* Live feed */
+.cam-live-feed {
+  background: #000;
+}
+
+/* Buttons */
+.btn-primary {
+  --bs-btn-bg: var(--ch-primary);
+  --bs-btn-border-color: var(--ch-primary);
+  --bs-btn-hover-bg: #e55800;
+  --bs-btn-hover-border-color: #e55800;
+  --bs-btn-active-bg: #cc4e00;
+  --bs-btn-active-border-color: #cc4e00;
+}
+
+.text-primary { color: var(--ch-primary) !important; }
+
+/* Pagination */
+.page-link {
+  color: var(--ch-primary);
+}
+.page-item.active .page-link {
+  background-color: var(--ch-primary);
+  border-color: var(--ch-primary);
+}
+
+/* Admin Dashboard */
+.admin-sidebar {
+  width: 260px;
+  min-height: 100vh;
+  background: var(--bs-body-bg);
+  border-right: 1px solid var(--bs-border-color);
+}
+
+.admin-stat-card {
+  background: var(--bs-tertiary-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius-lg);
+  padding: 1.5rem;
+}
+
+.admin-stat-card .stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+}
+
+/* Leaflet overrides */
+.leaflet-popup-content-wrapper {
+  border-radius: var(--bs-border-radius-lg) !important;
+}
+
+/* Badge tweaks */
+.badge { font-weight: 500; }
+
+/* Smooth scroll */
+html { scroll-behavior: smooth; }
+
+/* Toast notifications */
+.toast-container {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  z-index: 9999;
+}
+
+/* Responsive */
+@media (max-width: 767.98px) {
+  .hero-section h1 { font-size: 2rem; }
+}
+
+/* Print */
+@media print {
+  #main-nav, footer, .btn, .badge { display: none !important; }
+}

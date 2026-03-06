@@ -1,47 +1,45 @@
 <?php
-require 'db.php';
-require 'includes/pagination.php'; // Include pagination logic
-require 'queries.php'; // Include the query logic
-require 'functions.php'; // Include the functions file
+require_once __DIR__ . '/includes/config.php';
+require_once __DIR__ . '/includes/database.php';
+require_once __DIR__ . '/includes/functions.php';
+
+$stats = CamDatabase::getInstance()->getStats();
+
+$pageTitle = 'About CamHacker - Live Webcam Directory | ' . SITE_NAME;
+$pageDescription = 'Learn about CamHacker, the largest global directory of online surveillance and security cameras with ' . number_format($stats['total_cams']) . ' cameras across ' . $stats['total_countries'] . ' countries.';
+$canonicalUrl = SITE_URL . '/about';
+
+require_once __DIR__ . '/includes/header.php';
 ?>
-<?php include 'includes/head.php'; 
-$dynamicTitle = 'About CamHacker'; // Default title
 
-?>
-<title><?php echo htmlspecialchars($dynamicTitle); ?></title>
-</head>
-<body>
+<div class="container py-5" style="max-width:800px;">
+  <h1 class="fw-bold mb-4">About CamHacker</h1>
 
-<main>
-<?php include 'includes/nav.php'; ?>
-    <div class="container mt-4">
-        <h1 class="mb-4">About CamHacker</h1>
-        
-            <h2 class="mb-4">Welcome to CamHacker</h2>
-            <p>Welcome to CamHacker, the largest global directory of online surveillance and security cameras. Browse live webcams from streets, traffic, parking lots, offices, beaches, and more from around the world. You can explore live streams from cameras in various countries and regions, and view feeds from popular brands such as Axis, Panasonic, Linksys, Sony, TP-Link, Foscam, and many other network video cameras available online without password protection. For the best experience, we recommend using the Mozilla Firefox browser to view these cameras.</p>
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+      <p class="lead">CamHacker is the largest global directory of online surveillance and security cameras, tracking <strong><?= number_format($stats['total_cams']) ?></strong> cameras across <strong><?= $stats['total_countries'] ?></strong> countries.</p>
 
-			<p>We do not intentionally infringe upon anyone's privacy or rights. However, it is possible that some webcam owners did not intend for their cameras to be publicly accessible and may have inadvertently left them unsecured. Certain cameras are used for security purposes in businesses or semi-public areas, while others are public tourist attractions that willingly share their live video streams with the world.</p>
+      <p>Browse live webcams from streets, traffic, parking lots, offices, beaches, and more from around the world. You can explore live streams from cameras in various countries and regions, and view feeds from popular brands such as Axis, Panasonic, Linksys, Sony, TP-Link, Foscam, and many other network video cameras available online without password protection.</p>
 
-            <h3 class="mb-3">Privacy and Protection</h3>
-            <p>At CamHacker, we take privacy seriously, and the following measures have been put in place to ensure the protection of individual privacy:</p>
-            <ul>
-                <li>We only display filtered cameras that do not infringe on personal privacy. None of the cameras on CamHacker invade anyone's private life.</li>
-                <li>Any camera that violates privacy or is deemed unethical will be promptly removed upon request. Simply send us an email with the direct link to the camera, and we will take action immediately.</li>
-                <li>If you prefer not to contact us directly, you can remove your camera from our directory by setting a password for your device.</li>
-            </ul>
+      <p>We do not intentionally infringe upon anyone's privacy or rights. However, it is possible that some webcam owners did not intend for their cameras to be publicly accessible and may have inadvertently left them unsecured.</p>
 
-            <h3 class="mb-3">Camera Coordinates</h3>
-            <p>Please note that the coordinates of the cameras are approximate. They reflect the general location of the ISP address and not the camera's exact physical address, offering accuracy only within a few hundred miles. The coordinates are provided to indicate the city of the camera, not its specific address or location.</p>
+      <h2 class="h4 mt-4">Privacy and Protection</h2>
+      <p>At CamHacker, we take privacy seriously:</p>
+      <ul>
+        <li>We only display filtered cameras that do not infringe on personal privacy.</li>
+        <li>Any camera that violates privacy will be promptly removed upon request. Simply send us an email with the direct link.</li>
+        <li>To remove your camera from our directory, simply set a password on your device.</li>
+      </ul>
 
-			<p>If you have any questions or concerns about the site, write to solidbunker@protonmail.com.</p>
+      <h2 class="h4 mt-4">Camera Coordinates</h2>
+      <p>Camera coordinates are approximated by IP Geolocation. They reflect the general location of the IP address, not the camera's exact physical address, offering accuracy only within a few hundred miles.</p>
 
-            <p>Thank you for exploring the CamHacker directory.</p>
+      <h2 class="h4 mt-4">Contact</h2>
+      <p>If you have any questions or concerns, write to <a href="mailto:solidbunker@protonmail.com">solidbunker@protonmail.com</a>.</p>
 
-            <p>CamHacker Team.</p>
+      <p class="mt-4 text-body-secondary">Thank you for exploring CamHacker.<br>- The CamHacker Team</p>
     </div>
-</main>
+  </div>
+</div>
 
-<?php include 'includes/modal.php'; ?>
-<?php include 'includes/footer.php'; ?>
-</body>
-</html>
+<?php require_once __DIR__ . '/includes/footer.php'; ?>

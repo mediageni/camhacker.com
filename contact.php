@@ -1,31 +1,34 @@
 <?php
-require 'db.php';
-require 'includes/pagination.php'; // Include pagination logic
-require 'queries.php'; // Include the query logic
-require 'functions.php'; // Include the functions file
+require_once __DIR__ . '/includes/config.php';
+require_once __DIR__ . '/includes/database.php';
+require_once __DIR__ . '/includes/functions.php';
+
+$pageTitle = 'Contact Us - ' . SITE_NAME;
+$pageDescription = 'Contact the CamHacker team for camera removal requests, privacy concerns, or general inquiries.';
+$canonicalUrl = SITE_URL . '/contact';
+
+require_once __DIR__ . '/includes/header.php';
 ?>
-<?php include 'includes/head.php'; 
-$dynamicTitle = 'Contact CamHacker'; // Page-specific title
-?>
-<title><?php echo htmlspecialchars($dynamicTitle); ?></title>
-</head>
-<body>
 
-<main>
-<?php include 'includes/nav.php'; ?>
-    <div class="container mt-4">
-        <h1 class="mb-4">Contact CamHacker</h1>
+<div class="container py-5" style="max-width:800px;">
+  <h1 class="fw-bold mb-4">Contact CamHacker</h1>
 
-        <p>If you have any questions, concerns, or would like to report a camera, feel free to contact us. We will get back to you as soon as possible.</p>
+  <div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+      <p class="lead">Have a question, privacy concern, or camera removal request? We'd love to hear from you.</p>
 
-        <p>You can write to us directly at: <strong>solidbunker@protonmail.com</strong>.</p>
+      <h2 class="h5 mt-4">Camera Removal</h2>
+      <p>If you want your camera removed from our directory, you have two options:</p>
+      <ul>
+        <li><strong>Set a password</strong> on your camera device - it will automatically be removed from our listings.</li>
+        <li><strong>Email us</strong> with the direct link to the camera page, and we will remove it promptly.</li>
+      </ul>
 
-        <p class="mt-4">We appreciate your feedback and inquiries. Thank you for visiting CamHacker!</p>
-
+      <h2 class="h5 mt-4">Get in Touch</h2>
+      <p>Email: <a href="mailto:solidbunker@protonmail.com">solidbunker@protonmail.com</a></p>
+      <p>Twitter: <a href="https://twitter.com/camhacker" target="_blank" rel="noopener">@camhacker</a></p>
     </div>
-</main>
+  </div>
+</div>
 
-<?php include 'includes/modal.php'; ?>
-<?php include 'includes/footer.php'; ?>
-</body>
-</html>
+<?php require_once __DIR__ . '/includes/footer.php'; ?>

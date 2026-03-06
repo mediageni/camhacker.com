@@ -1,106 +1,126 @@
 <?php
-require 'db.php';
-require 'includes/pagination.php'; 
-require 'queries.php';
-require 'functions.php';
+require_once __DIR__ . '/includes/config.php';
+require_once __DIR__ . '/includes/database.php';
+require_once __DIR__ . '/includes/functions.php';
 
-$results_per_page = 15;
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$page = max($page, 1);
-$offset = ($page - 1) * $results_per_page;
+$db = CamDatabase::getInstance();
 
-$countries = getDistinctValues($conn, 'country');
-$cities = getDistinctValues($conn, 'city');
-$manufacturers = getDistinctValues($conn, 'manufacturer');
-
-// Extract the 'tag' variable explicitly
 $filters = [
-    'search' => isset($_GET['search']) ? $_GET['search'] : '',
-    'country' => isset($_GET['country']) ? $_GET['country'] : '',
-    'city' => isset($_GET['city']) ? $_GET['city'] : '',
-    'manufacturer' => isset($_GET['manufacturer']) ? $_GET['manufacturer'] : '',
-    'tag' => isset($_GET['tag']) ? $_GET['tag'] : ''
+    'search' => $_GET['q'] ?? $_GET['search'] ?? '',
+    'country' => $_GET['country'] ?? '',
+    'city' => $_GET['city'] ?? '',
+    'manufacturer' => $_GET['manufacturer'] ?? '',
+    'tag' => $_GET['tag'] ?? '',
 ];
 
-// Build the dynamic H1 text based on search parameters
-$dynamicH1 = 'Live Webcams'; // Default H1
+$page = max(1, (int)($_GET['page'] ?? 1));
+$perPage = RESULTS_PER_PAGE;
+$offset = ($page - 1) * $perPage;
 
-$elements = [];
+$result = $db->search($filters, $perPage, $offset);
+$webcams = $result['data'];
+$totalResults = $result['total'];
+$totalPages = ceil($totalResults / $perPage);
 
-if ($filters['tag']) {
-    $elements[] = ucwords_custom($filters['tag']);
+$dynamicTitle = buildDynamicTitle($filters);
+$dynamicDescription = buildDynamicDescription($filters);
+
+$pageTitle = $dynamicTitle . ' | ' . SITE_NAME;
+$pageDescription = $dynamicDescription;
+
+// Build pagination base URL
+$queryParts = [];
+foreach ($filters as $k => $v) {
+    if (!empty($v)) $queryParts[] = urlencode($k) . '=' . urlencode($v);
 }
-if ($filters['search']) {
-    $elements[] = ucwords_custom($filters['search']);
-}
-if ($filters['manufacturer']) {
-    $elements[] = ucwords_custom($filters['manufacturer']);
-}
+$paginationBase = '/search?' . implode('&', $queryParts) . (!empty($queryParts) ? '&' : '');
 
-if (!empty($elements)) {
-    $dynamicH1 = 'Live ' . implode(' ', $elements) . ' Webcams';
+$extraHead = '
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "' . addslashes($dynamicTitle) . '",
+  "description": "' . addslashes($dynamicDescription) . '",
+  "url": "' . SITE_URL . '/search' . '",
+  "numberOfItems": ' . $totalResults . '
 }
+</script>';
 
-// Only add "in" if city or country is present
-if ($filters['city'] || $filters['country']) {
-    $dynamicH1 .= ' in ';
-    if ($filters['city']) {
-        $dynamicH1 .= ucwords_custom($filters['city']);
-    }
-    if ($filters['city'] && $filters['country']) {
-        $dynamicH1 .= ', ';
-    }
-    if ($filters['country']) {
-        $dynamicH1 .= ucwords_custom($filters['country']);
-    }
-}
-
-// Execute search query
-$search_query = buildSearchQuery($conn, $filters, $results_per_page, $offset);
-$stmt = $search_query['stmt'];
-$total_results = $search_query['total_results'];
-$stmt->execute();
-$result = $stmt->get_result();
-$total_pages = ceil($total_results / $results_per_page);
-
-// Include head.php and pass the filters for dynamic title/description
-include 'includes/head.php'; // head.php will now have access to $filters
+require_once __DIR__ . '/includes/header.php';
 ?>
-<title><?php echo htmlspecialchars($dynamicTitle); ?></title>
-</head>
-<body>
-<main>
-<?php include 'includes/nav.php'; ?>
 
-<div class="container mt-4">
-    <!-- SEO-optimized H1 -->
-    <h1 class="mb-4"><?php echo htmlspecialchars($dynamicH1); ?></h1>
-    
-    <!-- Include the card layout for webcams -->
-    <div class="row row-cols-1 row-cols-md-4 g-4">
-        <?php if ($result->num_rows > 0): ?>
-            <?php while ($row = $result->fetch_assoc()): ?>
-                <?php include 'includes/cam-item.php'; ?>
-            <?php endwhile; ?>
-        <?php else: ?>
-            <p>No webcams found.</p>
-        <?php endif; ?>
+<div class="container py-4">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">Home</a></li>
+      <?php if (!empty($filters['country'])): ?>
+        <li class="breadcrumb-item active"><?= e(ucwords_custom($filters['country'])) ?></li>
+      <?php elseif (!empty($filters['city'])): ?>
+        <li class="breadcrumb-item active"><?= e(ucwords_custom($filters['city'])) ?></li>
+      <?php elseif (!empty($filters['manufacturer'])): ?>
+        <li class="breadcrumb-item active"><?= e(ucwords_custom($filters['manufacturer'])) ?></li>
+      <?php else: ?>
+        <li class="breadcrumb-item active">Search</li>
+      <?php endif; ?>
+    </ol>
+  </nav>
+
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <div>
+      <h1 class="fw-bold mb-1"><?= e($dynamicTitle) ?></h1>
+      <p class="text-body-secondary mb-0"><?= number_format($totalResults) ?> webcams found</p>
+    </div>
+    <!-- Inline search -->
+    <form action="/search" method="GET" class="d-flex gap-2" style="max-width:400px;">
+      <input type="search" name="q" value="<?= e($filters['search']) ?>" class="form-control" placeholder="Search webcams...">
+      <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i></button>
+    </form>
+  </div>
+
+  <!-- Active Filters -->
+  <?php
+  $activeFilters = array_filter($filters);
+  if (!empty($activeFilters)): ?>
+    <div class="d-flex flex-wrap gap-2 mb-4">
+      <?php foreach ($activeFilters as $key => $val): ?>
+        <span class="badge bg-primary d-flex align-items-center gap-1 px-3 py-2">
+          <?= e(ucfirst($key)) ?>: <?= e(ucwords_custom($val)) ?>
+          <a href="<?php
+            $newFilters = $filters;
+            unset($newFilters[$key]);
+            $parts = [];
+            foreach ($newFilters as $k => $v) { if (!empty($v)) $parts[] = "$k=" . urlencode($v); }
+            echo '/search?' . implode('&', $parts);
+          ?>" class="text-white ms-1"><i class="bi bi-x-circle"></i></a>
+        </span>
+      <?php endforeach; ?>
+      <a href="/search" class="badge bg-body-secondary text-body-secondary text-decoration-none px-3 py-2">Clear all</a>
+    </div>
+  <?php endif; ?>
+
+  <?= renderAdBlock() ?>
+
+  <?php if (empty($webcams)): ?>
+    <div class="text-center py-5">
+      <i class="bi bi-camera-video-off display-1 text-body-secondary"></i>
+      <h3 class="mt-3">No webcams found</h3>
+      <p class="text-body-secondary">Try a different search or <a href="/search">browse all webcams</a>.</p>
+    </div>
+  <?php else: ?>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 g-4">
+      <?php foreach ($webcams as $cam): ?>
+        <?php include __DIR__ . '/includes/cam-card.php'; ?>
+      <?php endforeach; ?>
     </div>
 
-    <div class="row mt-5"> 
-        <ul class="pagination justify-content-center">
-            <?php paginate($total_pages, $page, '?search=' . urlencode($filters['search']) . '&country=' . urlencode($filters['country']) . '&city=' . urlencode($filters['city']) . '&manufacturer=' . urlencode($filters['manufacturer']) . '&tag=' . urlencode($filters['tag']) . '&'); ?>
-        </ul>
+    <div class="mt-5">
+      <?= renderPagination($totalPages, $page, $paginationBase) ?>
     </div>
+  <?php endif; ?>
+
+  <?= renderAdBlock() ?>
 </div>
-</main>
 
-<?php include 'includes/modal.php'; ?>
-<?php include 'includes/footer.php'; ?>
-</body>
-</html>
-
-<?php
-$stmt->close();
-$conn->close();
-?>
+<?php require_once __DIR__ . '/includes/footer.php'; ?>

@@ -1,52 +1,62 @@
 <?php
-require 'db.php';
-require 'includes/pagination.php'; // Include pagination logic
-require 'queries.php'; // Include the query logic
-require 'functions.php'; // Include the functions file
+require_once __DIR__ . '/includes/config.php';
+require_once __DIR__ . '/includes/database.php';
+require_once __DIR__ . '/includes/functions.php';
+
+$pageTitle = 'Privacy Policy - ' . SITE_NAME;
+$pageDescription = 'CamHacker privacy policy. Learn how we handle data, cookies, and camera information.';
+$canonicalUrl = SITE_URL . '/privacy';
+
+require_once __DIR__ . '/includes/header.php';
 ?>
-<?php include 'includes/head.php'; ?>
-</head>
-<body>
 
-<main>
-<?php include 'includes/nav.php'; ?>
-    <div class="container mt-4">
-        <h1 class="mb-4">Privacy Policy</h1>
-        
-        <p>This Privacy Policy outlines the types of personal information that is received and collected by our website and how it is used.</p>
-        
-        <h3>Information We Collect</h3>
-        <p>We do not collect or store personal information about our users directly. However, we use Google Analytics and Google AdSense, which may collect certain information about your device, browsing habits, and interactions with our website.</p>
+<div class="container py-5" style="max-width:800px;">
+  <h1 class="fw-bold mb-4">Privacy Policy</h1>
 
-        <h3>Google Analytics</h3>
-        <p>We use Google Analytics to collect information about how visitors interact with our website. This helps us understand website traffic, user behavior, and improve user experience. The information collected may include:</p>
-        <ul>
-            <li>IP address (anonymized)</li>
-            <li>Browser type and version</li>
-            <li>Pages visited and time spent on each page</li>
-            <li>Operating system and device information</li>
-        </ul>
-        <p>This data is collected anonymously and is used for analytical purposes only. No personally identifiable information is stored or shared.</p>
+  <div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+      <p>Last updated: <?= date('F j, Y') ?></p>
 
-        <h3>Google AdSense</h3>
-        <p>We use Google AdSense to display advertisements on our website. Google AdSense may use cookies to serve ads based on your previous visits to our website or other websites. Google's use of advertising cookies enables it and its partners to serve ads to users based on their visit to our site and/or other sites on the internet.</p>
-        <p>Users may opt out of personalized advertising by visiting the <a href="https://www.google.com/settings/ads">Google Ads Settings</a>.</p>
+      <h2 class="h5 mt-4">Information We Collect</h2>
+      <p>CamHacker does not collect personal information from visitors directly. We use analytics services to understand traffic patterns and improve our service.</p>
 
-        <h3>Cookies</h3>
-        <p>Cookies are small files stored on your device to help analyze web traffic or keep track of preferences. Google AdSense uses cookies to serve ads on our site. These cookies do not contain personal information. You can choose to disable cookies through your browser settings.</p>
+      <h2 class="h5 mt-4">Camera Data</h2>
+      <p>All cameras listed on CamHacker are publicly accessible IP cameras that do not require authentication. We do not access password-protected cameras or private networks. Camera location data is approximated using IP geolocation.</p>
 
-        <h3>Third-Party Links</h3>
-        <p>Our website may contain links to other websites. We are not responsible for the privacy practices or content of these third-party sites. We recommend you review the privacy policies of any website you visit.</p>
+      <h2 class="h5 mt-4">Google Analytics & AdSense</h2>
+      <p>We use Google AdSense to display advertisements. Google may use cookies to serve ads based on your previous visits. Users may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener">Google Ads Settings</a>.</p>
 
-        <h3>Changes to This Privacy Policy</h3>
-        <p>We may update this Privacy Policy from time to time. Any changes will be reflected on this page, and your continued use of our website will signify your acceptance of the updated terms.</p>
+      <h2 class="h5 mt-4">Cookies</h2>
+      <p>We use cookies for:</p>
+      <ul>
+        <li>Theme preference (light/dark mode)</li>
+        <li>View count tracking (session-based)</li>
+        <li>Analytics (Statcounter)</li>
+        <li>Advertising (Google AdSense)</li>
+      </ul>
+      <p>You can choose to disable cookies through your browser settings.</p>
 
-        <h3>Contact Us</h3>
-        <p>If you have any questions about this Privacy Policy, feel free to <a href="/contact">contact us</a>.</p>
+      <h2 class="h5 mt-4">Third-Party Services</h2>
+      <ul>
+        <li><strong>Google AdSense</strong> - for advertising</li>
+        <li><strong>Statcounter</strong> - for anonymous analytics</li>
+        <li><strong>wsrv.nl</strong> - for image proxying</li>
+        <li><strong>OpenStreetMap</strong> - for map tiles</li>
+      </ul>
+
+      <h2 class="h5 mt-4">Third-Party Links</h2>
+      <p>Our website may contain links to other websites. We are not responsible for the privacy practices or content of these third-party sites.</p>
+
+      <h2 class="h5 mt-4">Camera Removal</h2>
+      <p>If you find your camera listed and wish to have it removed, please <a href="/contact">contact us</a> or set a password on your camera device.</p>
+
+      <h2 class="h5 mt-4">Changes</h2>
+      <p>We may update this policy from time to time. Changes will be posted on this page.</p>
+
+      <h2 class="h5 mt-4">Contact</h2>
+      <p>Questions about this Privacy Policy? <a href="/contact">Contact us</a>.</p>
     </div>
-</main>
+  </div>
+</div>
 
-<?php include 'includes/modal.php'; ?>
-<?php include 'includes/footer.php'; ?>
-</body>
-</html>
+<?php require_once __DIR__ . '/includes/footer.php'; ?>
