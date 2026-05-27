@@ -29,10 +29,13 @@ $related = $db->search(['country' => $webcam['country']], 8);
 $relatedCams = array_filter($related['data'], fn($c) => (int)$c['id'] !== $id);
 $relatedCams = array_slice($relatedCams, 0, 4);
 
-$pageTitle = e($webcam['title_seo']) . ' | ' . SITE_NAME;
-$pageDescription = e($webcam['description_seo']);
+$pageTitle = (!empty($webcam['meta_title']) ? $webcam['meta_title'] : $webcam['title_seo']) . ' | ' . SITE_NAME;
+$pageDescription = !empty($webcam['meta_description']) ? $webcam['meta_description'] : $webcam['description_seo'];
+$h1Heading = !empty($webcam['h1']) ? $webcam['h1'] : $webcam['title_seo'];
 $canonicalUrl = SITE_URL . '/cam/' . $id;
-$ogImage = 'https://wsrv.nl/?url=' . urlencode($webcam['image_url_full'] ?? '');
+$ogImage = SITE_URL . '/cam-image/' . $id . '.jpg';
+$ogImageW = 1200;
+$ogImageH = 630;
 
 $extraHead = '
 <script type="application/ld+json">
@@ -99,14 +102,12 @@ $hasCoords = abs($lat) <= 90 && abs($lng) <= 180 && ($lat != 0 || $lng != 0);
     </ol>
   </nav>
 
-  <h1 class="fw-bold mb-2"><?= e($webcam['title_seo']) ?></h1>
+  <h1 class="fw-bold mb-2"><?= e($h1Heading) ?></h1>
   <p class="text-body-secondary mb-4">
     <i class="bi bi-eye me-1"></i><?= number_format($webcam['view_count'] ?? 0) ?> views
     <span class="mx-2">|</span>
     <span class="badge bg-danger"><i class="bi bi-record-circle me-1"></i>LIVE</span>
   </p>
-
-  <?= renderAdBlock() ?>
 
   <div class="row g-4">
     <!-- Live Feed -->
@@ -178,6 +179,8 @@ $hasCoords = abs($lat) <= 90 && abs($lng) <= 180 && ($lat != 0 || $lng != 0);
         </div>
       </div>
       <?php endif; ?>
+
+      <?= renderAdBlock() ?>
     </div>
   </div>
 
@@ -202,6 +205,8 @@ $hasCoords = abs($lat) <= 90 && abs($lng) <= 180 && ($lat != 0 || $lng != 0);
     </div>
   </section>
   <?php endif; ?>
+
+  <?= renderMultiplexAd() ?>
 </div>
 
 <?php if ($hasCoords): ?>

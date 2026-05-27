@@ -2,7 +2,7 @@
 $pageTitle = $pageTitle ?? SITE_NAME . ' - Live Webcams from Around the World';
 $pageDescription = $pageDescription ?? SITE_DESCRIPTION;
 $canonicalUrl = $canonicalUrl ?? SITE_URL . $_SERVER['REQUEST_URI'];
-$ogImage = $ogImage ?? SITE_URL . '/assets/img/og-default.jpg';
+$ogImage = $ogImage ?? '';
 ?>
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="auto">
@@ -22,10 +22,15 @@ $ogImage = $ogImage ?? SITE_URL . '/assets/img/og-default.jpg';
 <meta property="og:description" content="<?= e($pageDescription) ?>">
 <meta property="og:url" content="<?= e($canonicalUrl) ?>">
 <meta property="og:site_name" content="<?= SITE_NAME ?>">
-
-<meta name="twitter:card" content="summary_large_image">
+<?php if (!empty($ogImage)): ?><meta property="og:image" content="<?= e($ogImage) ?>">
+<?php if (!empty($ogImageW)): ?><meta property="og:image:width" content="<?= (int)$ogImageW ?>">
+<meta property="og:image:height" content="<?= (int)$ogImageH ?>">
+<?php endif; ?><?php endif; ?>
+<meta name="twitter:card" content="<?= !empty($ogImage) ? 'summary_large_image' : 'summary' ?>">
 <meta name="twitter:title" content="<?= e($pageTitle) ?>">
 <meta name="twitter:description" content="<?= e($pageDescription) ?>">
+<?php if (!empty($ogImage)): ?><meta name="twitter:image" content="<?= e($ogImage) ?>">
+<?php endif; ?>
 <meta name="theme-color" content="#ff6300">
 
 <!-- Bootstrap 5.3 -->

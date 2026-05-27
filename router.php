@@ -13,6 +13,7 @@ if ($uri !== '/' && file_exists(__DIR__ . $uri) && !is_dir(__DIR__ . $uri)) {
 
 // Route rewrites (mirrors .htaccess)
 $routes = [
+    '#^/cam-image/(\d+)\.jpg$#' => '/cam-image.php?id=$1',
     '#^/cam/(\d+)$#'            => '/cam.php?id=$1',
     '#^/country/([^/]+)$#'      => '/search.php?country=$1',
     '#^/city/([^/]+)$#'         => '/search.php?city=$1',
